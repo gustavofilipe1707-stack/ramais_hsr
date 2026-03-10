@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>HSR - Reciclagem Ramais Vonix v3</title>
+    <title>HSR - Reciclagem Ramais Vonix v3.0</title>
     <style>
         :root { --primary: #2c3e50; --danger: #e74c3c; --success: #27ae60; --blue: #3498db; --purple: #8e44ad; --orange: #e67e22; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #ecf0f1; margin: 0; padding: 15px; }
@@ -10,70 +10,83 @@
         header { border-bottom: 3px solid var(--primary); margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; }
         h1 { color: var(--primary); margin: 0; font-size: 18px; text-transform: uppercase; }
         
+        /* Grid de 3 colunas para os 3 checks */
         .grid-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         .setup-box { background: #f8f9fa; border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
         .setup-box strong { display: block; margin-bottom: 5px; color: var(--primary); font-size: 12px; }
         
-        textarea { width: 100%; height: 220px; border-radius: 5px; border: 1px solid #ccc; padding: 8px; font-family: 'Courier New', monospace; font-size: 10px; resize: none; box-sizing: border-box; }
+        textarea { width: 100%; height: 250px; border-radius: 5px; border: 1px solid #ccc; padding: 8px; font-family: 'Courier New', monospace; font-size: 10px; resize: none; box-sizing: border-box; background: #fff; }
         
         .card { border: 1px solid #ddd; border-radius: 8px; padding: 15px; display: none; background: #fff; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; font-size: 12px; }
-        th { background: #f2f2f2; color: var(--primary); }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; font-size: 11px; }
+        th { background: #f2f2f2; color: var(--primary); text-transform: uppercase; }
         
-        .btn { border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; width: 100%; margin-top: 10px; }
-        .btn-processar { background: var(--purple); font-size: 14px; text-transform: uppercase; }
+        .btn { border: none; padding: 15px; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; width: 100%; margin-top: 5px; }
+        .btn-processar { background: var(--purple); font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
         .btn-csv { background: var(--success); width: auto; margin-top: 15px; }
         
         .badge { padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; color: white; }
         .bg-red { background: var(--danger); }
         .bg-orange { background: var(--orange); }
+        
+        .footer-info { font-size: 11px; color: #7f8c8d; margin-top: 15px; text-align: center; border-top: 1px solid #eee; padding-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>Reciclagem Vonix HSR <small style="color:var(--blue)">v3.0 - Triple Check Ativo</small></h1>
-        <strong id="currentDate">10/03/2026</strong>
+        <h1>Reciclagem Vonix HSR <small style="color:var(--blue)">v3.0 - Triple Check</small></h1>
+        <div style="text-align: right;">
+            <span style="font-size: 11px; color: #666;">Data de Auditoria:</span><br>
+            <strong id="currentDate">10/03/2026</strong>
+        </div>
     </header>
 
     <div class="grid-inputs">
         <div class="setup-box">
             <strong>1. Histórico de Uso (D-1)</strong>
-            <textarea id="inputHist" placeholder="Cole 'Uso no Mês' da Vonix..."></textarea>
+            <textarea id="inputHist" placeholder="Cole aqui a tabela 'Uso no Mês'..."></textarea>
         </div>
+        
         <div class="setup-box">
-            <strong>2. Online Agora (D-0)</strong>
-            <textarea id="inputOnline" placeholder="Cole 'Ramais de Callcenter'..."></textarea>
+            <strong>2. Status Online (D-0)</strong>
+            <textarea id="inputOnline" placeholder="Cole aqui 'Ramais de Callcenter' (quem está conectado agora)..."></textarea>
         </div>
+
         <div class="setup-box">
-            <strong>3. Chamadas de Hoje (D-0)</strong>
-            <textarea id="inputChamadas" placeholder="Cole o relatório de chamadas de hoje..."></textarea>
+            <strong>3. Chamadas do Dia (D-0)</strong>
+            <textarea id="inputChamadas" placeholder="Cole aqui o relatório de 'Chamadas' realizadas hoje..."></textarea>
         </div>
     </div>
 
-    <button class="btn btn-processar" onclick="tripleCheck()">🔍 Validar Reciclagem Total</button>
+    <button class="btn btn-processar" onclick="executarTripleCheck()">🚀 Cruzar Dados e Gerar Lista de Corte</button>
 
-    <div id="resultadoCard" class="card">
-        <h3 style="margin-top:0; color:var(--danger); font-size:16px;">🚫 Ramais Confirmados para Reciclagem</h3>
+    <div id="resultadoCard" class="card" style="margin-top: 20px;">
+        <h3 style="margin-top:0; color:var(--danger); font-size:16px;">🚫 Ramais para Reciclagem Imediata</h3>
         <table id="tabelaCorte">
             <thead>
                 <tr>
                     <th>Ramal</th>
-                    <th>Uso Histórico</th>
+                    <th>Dias Usados (Mês)</th>
                     <th>Status D-0</th>
                     <th>Motivo do Corte</th>
                 </tr>
             </thead>
             <tbody id="tabelaCorpo"></tbody>
         </table>
-        <button class="btn btn-csv" onclick="exportarCSV()">📥 Exportar Lista de Corte (.CSV)</button>
+
+        <button class="btn btn-csv" onclick="exportarCSV()">📥 Baixar CSV para Desativação</button>
+    </div>
+
+    <div class="footer-info">
+        HSR Specialist Researchers | ExitFlow 1.0 | Proteção Datafolha (12000) Automática
     </div>
 </div>
 
 <script>
-    function tripleCheck() {
+    function executarTripleCheck() {
         const histRaw = document.getElementById('inputHist').value;
         const onlineRaw = document.getElementById('inputOnline').value;
         const chamadasRaw = document.getElementById('inputChamadas').value;
@@ -81,71 +94,94 @@
         const card = document.getElementById('resultadoCard');
         
         corpo.innerHTML = "";
-        const ramaisAtivosD0 = new Set();
+        const ramaisPoupados = new Set();
 
-        // CHECK 2: Ramais com Agente Logado
+        // --- LÓGICA DE PROTEÇÃO D-0 ---
+        
+        // 1. Proteger quem está Conectado + com Agente Logado
         onlineRaw.split('\n').forEach(l => {
             const ramalMatch = l.match(/^(\d+)/);
-            if (ramalMatch && (l.includes("Conectado") && /[a-zA-Z]/.test(l.split('\t')[2] || l.split(' ')[2]))) {
-                ramaisAtivosD0.add(ramalMatch[1]);
+            if (ramalMatch) {
+                const r = ramalMatch[1];
+                const estaConectado = l.includes("Conectado");
+                const temAgente = /([a-zA-Záàâãéèêíïóôõöúçñ\s]+)\s\(\d+\)/i.test(l);
+                if (estaConectado && temAgente) ramaisPoupados.add(r);
             }
         });
 
-        // CHECK 3: Ramais que fizeram chamadas hoje (Regex para pegar ramal antes do parênteses)
+        // 2. Proteger quem já fez chamadas hoje (mesmo que esteja offline agora)
         chamadasRaw.split('\n').forEach(l => {
-            const ramalCallMatch = l.match(/^(\d+)\s*\(/);
-            if (ramalCallMatch) ramaisAtivosD0.add(ramalCallMatch[1]);
+            const rMatch = l.match(/^(\d+)/);
+            if (rMatch) ramaisPoupados.add(rMatch[1]);
         });
 
-        const diasUteis = [9, 6, 5]; // Exemplo 10/03
+        // --- LÓGICA DE ANÁLISE HISTÓRICA ---
+        
+        const diasUteisAnalise = [9, 6, 5]; // Ajustado para terça-feira 10/03
         let count = 0;
 
         histRaw.split('\n').forEach(linha => {
             const partes = linha.trim().split(/\s+/);
             if (partes.length < 2) return;
+            
             const ramal = partes[0];
-            if (ramal.startsWith('120') || isNaN(ramal)) return;
+            
+            // Filtros de Exclusão (Datafolha e Cabeçalhos)
+            if (ramal.startsWith('120') || isNaN(ramal) || ramal.length < 3) return;
 
-            const diasUsados = (linha.includes(',') ? linha.split(',').slice(1).join(',') : partes.slice(2).join(',')).split(',').map(d => parseInt(d.trim()));
-            const inativoHist = !diasUteis.some(d => diasUsados.includes(d));
+            // Extrair dias de uso
+            const diasTexto = (linha.includes(',') ? linha.split(',').slice(1).join(',') : partes.slice(2).join(','));
+            const diasUsados = diasTexto.split(',').map(d => parseInt(d.trim()));
+            const inativoNoMes = !diasUteisAnalise.some(d => diasUsados.includes(d));
 
-            // SÓ RECICLA SE: Inativo D-1 E NÃO estiver Online E NÃO tiver feito chamada
-            if (inativoHist && !ramaisAtivosD0.has(ramal)) {
+            // REGRA FINAL: Inativo D-1 E NÃO poupado em nenhum check D-0
+            if (inativoNoMes && !ramaisPoupados.has(ramal)) {
                 count++;
-                let statusD0 = "Offline";
-                let motivo = "Sem atividade nos 3 checks";
                 
-                if (onlineRaw.includes(ramal)) {
+                let statusD0 = "Offline";
+                let motivoCorte = "Sem atividade nos 3 checks";
+                
+                // Verifica se ele está ocioso (conectado mas sem agente)
+                if (onlineRaw.includes(ramal) && (onlineRaw.includes("Conectado"))) {
                     statusD0 = "Conectado (Ocioso)";
-                    motivo = "Sem Agente Logado";
+                    motivoCorte = "Sem Agente Logado hoje";
                 }
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><b>${ramal}</b></td>
-                    <td>${diasUsados.filter(d => !isNaN(d)).join(',') || 'Nenhum'}</td>
+                    <td>${diasTexto || 'Nenhum'}</td>
                     <td><span class="badge ${statusD0.includes('Ocioso') ? 'bg-orange' : 'bg-red'}">${statusD0}</span></td>
-                    <td>${motivo}</td>
+                    <td>${motivoCorte}</td>
                 `;
                 corpo.appendChild(tr);
             }
         });
 
-        card.style.display = count > 0 ? 'block' : 'none';
-        if (count === 0) alert("✅ Todos os ramais estão protegidos pelos filtros!");
+        if (count > 0) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+            alert("✅ Tudo limpo! Nenhum ramal cumpre os critérios para reciclagem.");
+        }
     }
 
     function exportarCSV() {
-        let csv = 'Ramal;Status;Motivo\n';
+        let csv = 'Ramal;Status_D0;Motivo\n';
         document.querySelectorAll("#tabelaCorpo tr").forEach(row => {
             const cols = row.querySelectorAll("td");
             csv += `${cols[0].innerText};${cols[2].innerText};${cols[3].innerText}\n`;
         });
         const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = `reciclagem_hsr_full.csv`; a.click();
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `lista_corte_hsr_${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
     }
+
     document.getElementById('currentDate').innerText = new Date().toLocaleDateString('pt-BR');
 </script>
+
 </body>
 </html>
